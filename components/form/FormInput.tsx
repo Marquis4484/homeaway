@@ -1,5 +1,5 @@
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 type FormInputProps = {
   name: string;
@@ -12,8 +12,8 @@ type FormInputProps = {
 function FormInput(props: FormInputProps) {
   const { label, name, type, defaultValue, placeholder } = props;
   return (
-    <div className='mb-2'>
-      <Label htmlFor={name} className='capitalize'>
+    <div className="mb-2">
+      <Label htmlFor={name} className="capitalize">
         {label || name}
       </Label>
       <Input
