@@ -100,6 +100,6 @@ export const IconButton = ({ actionType }: { actionType: actionType }) => {
       className='p-2 cursor-pointer'
     >
       {pending ? <ReloadIcon className=' animate-spin' /> : renderIcon()}
-    
+    </Button>
   );
 };
