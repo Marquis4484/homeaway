@@ -1,4 +1,4 @@
-import ChartsContainer from '@/components/admin/ChartsContainer';
+// import ChartsContainer from '@/components/admin/ChartsContainer';
 import {
   ChartsLoadingContainer,
   StatsLoadingContainer,
@@ -13,7 +13,7 @@ function AdminPage() {
         <StatsContainer />
       </Suspense>
       <Suspense fallback={<ChartsLoadingContainer />}>
-        <ChartsContainer />
+        {/* <ChartsContainer /> */}
       </Suspense>
     </>
   );
