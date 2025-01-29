@@ -7,8 +7,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HomeAway Draft",
-  description: "Feel at home, away from home.",
+  title: "HomeAway (MongoDB)",
+  description: "Airbnb Clone developed in Next.js",
 };
 
 export default function RootLayout({
