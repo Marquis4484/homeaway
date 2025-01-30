@@ -8,3 +8,7 @@ export default class Cluster0 {
     public id?: ObjectId
   ) {}
 }
+export const uploadImage = async (image: File) => {
+  const timestamp = Date.now();
+
+};
