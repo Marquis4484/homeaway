@@ -1,9 +1,9 @@
-import { fetchReservations } from "@/utils/actions";
-import Link from "next/link";
-import EmptyList from "@/components/home/EmptyList";
-import CountryFlagAndName from "@/components/card/CountryFlagAndName";
+import { fetchReservations } from '@/utils/actions';
+import Link from 'next/link';
+import EmptyList from '@/components/home/EmptyList';
+import CountryFlagAndName from '@/components/card/CountryFlagAndName';
 
-import { formatDate, formatCurrency } from "@/utils/format";
+import { formatDate, formatCurrency } from '@/utils/format';
 import {
   Table,
   TableBody,
@@ -12,8 +12,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import Stats from "@/components/reservations/Stats";
+} from '@/components/ui/table';
+import Stats from '@/components/reservations/Stats';
 async function ReservationsPage() {
   const reservations = await fetchReservations();
   if (reservations.length === 0) return <EmptyList />;
@@ -21,8 +21,8 @@ async function ReservationsPage() {
   return (
     <>
       <Stats />
-      <div className="mt-16">
-        <h4 className="mb-4 capitalize">
+      <div className='mt-16'>
+        <h4 className='mb-4 capitalize'>
           total reservations : {reservations.length}
         </h4>
         <Table>
@@ -49,7 +49,7 @@ async function ReservationsPage() {
                   <TableCell>
                     <Link
                       href={`/properties/${propertyId}`}
-                      className="underline text-muted-foreground tracking-wide"
+                      className='underline text-muted-foreground tracking-wide'
                     >
                       {name}
                     </Link>

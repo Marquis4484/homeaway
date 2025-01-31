@@ -1,43 +1,14 @@
-"use client";
-import { Input } from "../ui/input";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
-import { useState, useEffect } from "react";
+import Link from 'next/link';
+import { LuTent } from 'react-icons/lu';
+import { Button } from '../ui/button';
 
-function NavSearch() {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-
-  const [search, setSearch] = useState(
-    searchParams.get("search")?.toString() || ""
-  );
-  const handleSearch = useDebouncedCallback((value: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set("search", value);
-    } else {
-      params.delete("search");
-    }
-    replace(`/?${params.toString()}`);
-  }, 500);
-
-  useEffect(() => {
-    if (!searchParams.get("search")) {
-      setSearch("");
-    }
-  }, [searchParams.get("search")]);
-
+function Logo() {
   return (
-    <Input
-      type="text"
-      placeholder="find a property..."
-      className="max-w-xs dark:bg-muted"
-      onChange={(e) => {
-        setSearch(e.target.value);
-        handleSearch(e.target.value);
-      }}
-      value={search}
-    />
+    <Button size='icon' asChild>
+      <Link href='/'>
+        <LuTent className='w-6 h-6' />
+      </Link>
+    </Button>
   );
 }
-export default NavSearch;
+export default Logo;

@@ -1,87 +1,80 @@
-import FavoriteToggleButton from "@/components/card/FavoriteToggleButton";
-import PropertyRating from "@/components/card/PropertyRating";
-import BreadCrumbs from "@/components/properties/BreadCrumbs";
-import ImageContainer from "@/components/properties/ImageContainer";
-import PropertyDetails from "@/components/properties/PropertyDetails";
-import ShareButton from "@/components/properties/ShareButton";
-import UserInfo from "@/components/properties/UserInfo";
-import { Separator } from "@/components/ui/separator";
-import { fetchPropertyDetails, findExistingReview } from "@/utils/actions";
-import { redirect } from "next/navigation";
-import Description from "@/components/properties/Description";
-import Amenities from "@/components/properties/Amenities";
-import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
-import SubmitReview from "@/components/reviews/SubmitReview";
-import PropertyReviews from "@/components/reviews/PropertyReviews";
-import { auth } from "@clerk/nextjs/server";
-const DynamicMap = dynamic(
-  () => import("@/components/properties/PropertyMap"),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[400px] w-full" />,
-  }
-);
+import {
+  fetchRentalDetails,
+  updatePropertyImageAction,
+  updatePropertyAction,
+} from '@/utils/actions';
+import FormContainer from '@/components/form/FormContainer';
+import FormInput from '@/components/form/FormInput';
+import CategoriesInput from '@/components/form/CategoriesInput';
+import PriceInput from '@/components/form/PriceInput';
+import TextAreaInput from '@/components/form/TextAreaInput';
+import CountriesInput from '@/components/form/CountriesInput';
+import CounterInput from '@/components/form/CounterInput';
+import AmenitiesInput from '@/components/form/AmenitiesInput';
+import { SubmitButton } from '@/components/form/Buttons';
+import { redirect } from 'next/navigation';
+import { type Amenity } from '@/utils/amenities';
+import ImageInputContainer from '@/components/form/ImageInputContainer';
 
-const DynamicBookingWrapper = dynamic(
-  () => import("@/components/booking/BookingWrapper"),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-[200px] w-full" />,
-  }
-);
+async function EditRentalPage({ params }: { params: { id: string } }) {
+  const property = await fetchRentalDetails(params.id);
 
-async function PropertyDetailsPage({ params }: { params: { id: string } }) {
-  const property = await fetchPropertyDetails(params.id);
-  if (!property) redirect("/");
-  const { baths, bedrooms, beds, guests } = property;
-  const details = { baths, bedrooms, beds, guests };
-  const firstName = property.profile.firstName;
-  const profileImage = property.profile.profileImage;
+  if (!property) redirect('/');
 
-  const { userId } = auth();
-  const isNotOwner = property.profile.clerkId !== userId;
-  const reviewDoesNotExist =
-    userId && isNotOwner && !(await findExistingReview(userId, property.id));
+  const defaultAmenities: Amenity[] = JSON.parse(property.amenities);
+
   return (
     <section>
-      <BreadCrumbs name={property.name} />
-      <header className="flex justify-between items-center mt-4">
-        <h1 className="text-4xl font-bold capitalize">{property.tagline}</h1>
-        <div className="flex items-center gap-x-4">
-          {/* share button */}
-          <ShareButton name={property.name} propertyId={property.id} />
-          <FavoriteToggleButton propertyId={property.id} />
-        </div>
-      </header>
-      <ImageContainer mainImage={property.image} name={property.name} />
-      <section className="lg:grid lg:grid-cols-12 gap-x-12 mt-12">
-        <div className="lg:col-span-8">
-          <div className="flex gap-x-4 items-center">
-            <h1 className="text-xl font-bold">{property.name} </h1>
-            <PropertyRating inPage propertyId={property.id} />
+      <h1 className='text-2xl font-semibold mb-8 capitalize'>Edit Property</h1>
+      <div className='border p-8 rounded-md '>
+        <ImageInputContainer
+          name={property.name}
+          text='Update Image'
+          action={updatePropertyImageAction}
+          image={property.image}
+        >
+          <input type='hidden' name='id' value={property.id} />
+        </ImageInputContainer>
+
+        <FormContainer action={updatePropertyAction}>
+          <input type='hidden' name='id' value={property.id} />
+          <div className='grid md:grid-cols-2 gap-8 mb-4 mt-8'>
+            <FormInput
+              name='name'
+              type='text'
+              label='Name (20 limit)'
+              defaultValue={property.name}
+            />
+            <FormInput
+              name='tagline'
+              type='text '
+              label='Tagline (30 limit)'
+              defaultValue={property.tagline}
+            />
+            <PriceInput defaultValue={property.price} />
+            <CategoriesInput defaultValue={property.category} />
+            <CountriesInput defaultValue={property.country} />
           </div>
-          <PropertyDetails details={details} />
-          <UserInfo profile={{ firstName, profileImage }} />
-          <Separator className="mt-4" />
-          <Description description={property.description} />
-          <Amenities amenities={property.amenities} />
-          <DynamicMap countryCode={property.country} />
-        </div>
-        <div className="lg:col-span-4 flex flex-col items-center">
-          {/* calendar */}
-          <DynamicBookingWrapper
-            propertyId={property.id}
-            price={property.price}
-            bookings={property.bookings}
+
+          <TextAreaInput
+            name='description'
+            labelText='Description (10 - 100 Words)'
+            defaultValue={property.description}
           />
-        </div>
-      </section>
-      {/* after two column section */}
-      {reviewDoesNotExist && <SubmitReview propertyId={property.id} />}
-      <PropertyReviews propertyId={property.id} />
+
+          <h3 className='text-lg mt-8 mb-4 font-medium'>
+            Accommodation Details
+          </h3>
+          <CounterInput detail='guests' defaultValue={property.guests} />
+          <CounterInput detail='bedrooms' defaultValue={property.bedrooms} />
+          <CounterInput detail='beds' defaultValue={property.beds} />
+          <CounterInput detail='baths' defaultValue={property.baths} />
+          <h3 className='text-lg mt-10 mb-6 font-medium'>Amenities</h3>
+          <AmenitiesInput defaultValue={defaultAmenities} />
+          <SubmitButton text='edit property' className='mt-12' />
+        </FormContainer>
+      </div>
     </section>
   );
 }
-
-export default PropertyDetailsPage;
+export default EditRentalPage;

@@ -1,87 +1,63 @@
-import EmptyList from '@/components/home/EmptyList';
-import { fetchRentals, deleteRentalAction } from '@/utils/actions';
-import Link from 'next/link';
-
-import { formatCurrency } from '@/utils/format';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-
+import FormInput from '@/components/form/FormInput';
 import FormContainer from '@/components/form/FormContainer';
-import { IconButton } from '@/components/form/Buttons';
-
-async function RentalsPage() {
-  const rentals = await fetchRentals();
-
-  if (rentals.length === 0) {
-    return (
-      <EmptyList
-        heading='No rentals to display.'
-        message="Don't hesitate to create a rental."
-      />
-    );
-  }
-
+import { createPropertyAction } from '@/utils/actions';
+import { SubmitButton } from '@/components/form/Buttons';
+import PriceInput from '@/components/form/PriceInput';
+import CategoriesInput from '@/components/form/CategoriesInput';
+import TextAreaInput from '@/components/form/TextAreaInput';
+import CountriesInput from '@/components/form/CountriesInput';
+import ImageInput from '@/components/form/ImageInput';
+import CounterInput from '@/components/form/CounterInput';
+import AmenitiesInput from '@/components/form/AmenitiesInput';
+function CreatePropertyPage() {
   return (
-    <div className='mt-16'>
-      <h4 className='mb-4 capitalize'>Active Properties : {rentals.length}</h4>
-      <Table>
-        <TableCaption>A list of all your properties.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Property Name</TableHead>
-            <TableHead>Nightly Rate </TableHead>
-            <TableHead>Nights Booked</TableHead>
-            <TableHead>Total Income</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rentals.map((rental) => {
-            const { id: propertyId, name, price } = rental;
-            const { totalNightsSum, orderTotalSum } = rental;
-            return (
-              <TableRow key={propertyId}>
-                <TableCell>
-                  <Link
-                    href={`/properties/${propertyId}`}
-                    className='underline text-muted-foreground tracking-wide'
-                  >
-                    {name}
-                  </Link>
-                </TableCell>
-                <TableCell>{formatCurrency(price)}</TableCell>
-                <TableCell>{totalNightsSum || 0}</TableCell>
-                <TableCell>{formatCurrency(orderTotalSum)}</TableCell>
-
-                <TableCell className='flex items-center gap-x-2'>
-                  <Link href={`/rentals/${propertyId}/edit`}>
-                    <IconButton actionType='edit'></IconButton>
-                  </Link>
-                  <DeleteRental propertyId={propertyId} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+    <section>
+      <h1 className='text-2xl font-semibold mb-8 capitalize'>
+        create property
+      </h1>
+      <div className='border p-8 rounded'>
+        <h3 className='text-lg mb-4 font-medium'>General Info</h3>
+        <FormContainer action={createPropertyAction}>
+          <div className='grid md:grid-cols-2 gap-8 mb-4'>
+            <FormInput
+              name='name'
+              type='text'
+              label='Name (20 limit)'
+              defaultValue='Cabin in Latvia'
+            />
+            <FormInput
+              name='tagline'
+              type='text'
+              label='Tagline (30 limit)'
+              defaultValue='Dream Getaway Awaits You Here'
+            />
+            {/* price */}
+            <PriceInput />
+            {/* categories */}
+            <CategoriesInput />
+          </div>
+          {/* text area / description */}
+          <TextAreaInput
+            name='description'
+            labelText='Description (10 - 1000 words)'
+          />
+          <div className='grid sm:grid-cols-2 gap-8 mt-4'>
+            <CountriesInput />
+            <ImageInput />
+          </div>
+          <h3 className='text-lg mt-8 mb-4 font-medium'>
+            Accommodation Details
+          </h3>
+          <CounterInput detail='guests' />
+          <CounterInput detail='bedrooms' />
+          <CounterInput detail='beds' />
+          <CounterInput detail='baths' />
+          <h3 className='text-lg mt-10 mb-6 font-medium'>Amenities</h3>
+          <AmenitiesInput />
+          <SubmitButton text='create rental' className='mt-12' />
+        </FormContainer>
+      </div>
+    </section>
   );
 }
-
-function DeleteRental({ propertyId }: { propertyId: string }) {
-  const deleteRental = deleteRentalAction.bind(null, { propertyId });
-  return (
-    <FormContainer action={deleteRental}>
-      <IconButton actionType='delete' />
-    </FormContainer>
-  );
-}
-
-export default RentalsPage;
+export default CreatePropertyPage;
